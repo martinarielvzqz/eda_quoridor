@@ -3,6 +3,7 @@ import json
 import sys
 import websockets
 
+from log import logger
 from utils import Config
 
 
@@ -14,7 +15,7 @@ async def send(websocket, action, data):
             'data': data
         }
     )
-    print(f">>> {message}")
+    logger.debug(f">>> {message}")
     await websocket.send(message)
 
 
@@ -24,7 +25,7 @@ async def process_event(websocket):
         try:
             request = await websocket.recv()
             request_data = json.loads(request)
-            print(f"<<< event: {request_data['event']} - data: {request_data['data']}")
+            logger.debug(f"<<< event: {request_data['event']} - data: {request_data['data']}")
 
             if request_data['event'] == "challenge" and request_data['data']['opponent'] == "martinv0001":
                 await send(websocket, 'accept_challenge', {
@@ -33,7 +34,7 @@ async def process_event(websocket):
             elif request_data['event'] == 'your_turn':
                 pass
         except Exception as e:
-            print(f"exception {e}")
+            logger.error(f"exception {e}")
 
 
 async def start(host: str, auth_token: str):
@@ -43,16 +44,16 @@ async def start(host: str, auth_token: str):
     while True:
         try:
             async with websockets.connect(uri) as websocket:
-                print(f"connected to {host}")
+                logger.info(f"connected to {host}")
                 await process_event(websocket)
         except KeyboardInterrupt:
-            print("exiting...")
+            logger.info("exiting...")
             break
         except websockets.exceptions.InvalidURI as e:
-            print(f"invalid uri... {e}")
+            logger.error(f"invalid uri... {e}")
             break
         except Exception as e:
-            print(f"error connecting... {e}")
+            logger.error(f"error connecting... {e}")
             # retry in 5 segs
             await asyncio.sleep(5)
 
@@ -73,4 +74,4 @@ if __name__ == '__main__':
     if auth_token:
         main(auth_token)
     else:
-        print("the token es missing")
+        logger.error("the token es missing")
