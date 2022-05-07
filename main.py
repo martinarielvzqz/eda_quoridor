@@ -4,7 +4,7 @@ import sys
 import websockets
 
 from log import logger
-from utils import Config
+from utils import Config, draw_board
 
 
 async def send(websocket, action, data):
@@ -32,7 +32,9 @@ async def process_event(websocket):
                     'challenge_id': request_data['data']['challenge_id']
                 })
             elif request_data['event'] == 'your_turn':
-                pass
+                board_graph = draw_board(request_data['data']['board'])
+                logger.debug(f"board\n{board_graph}")
+
         except Exception as e:
             logger.error(f"exception {e}")
 
