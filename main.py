@@ -3,8 +3,11 @@ import json
 import sys
 import websockets
 
-from quoridor import Quoridor
+from constants import (
+    LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
+)
 from log import logger
+from quoridor import Quoridor
 from utils import Config
 
 # contenedor de juegos
@@ -30,22 +33,23 @@ async def process_event(websocket):
         try:
             request = await websocket.recv()
             request_data = json.loads(request)
-            logger.debug(f"<<< event: {request_data['event']} - data: {request_data['data']}")
 
-            if request_data['event'] == "list_users":
-                pass
+            if request_data['event'] == LIST_USERS:
+                logger.debug(f"<<< event: {request_data['event']} - data: {request_data['data']}")
 
-            elif request_data['event'] == "challenge":
+            elif request_data['event'] == CHALLENGE:
                 if request_data['data']['opponent'] == "martinv0001":
                     await send(websocket, 'accept_challenge', {
                         'challenge_id': request_data['data']['challenge_id']
                     })
-            elif request_data['event'] == 'your_turn':
+
+            elif request_data['event'] == YOUR_TURN:
                 # get or create the corresponding game and play
                 if request_data["data"]["game_id"] not in games:
                     games[request_data["data"]["game_id"]] = Quoridor(request_data["data"])
-
                 game = games[request_data["data"]["game_id"]]
+
+                print(f"GAMES {len(games)}")
 
                 # only draw board for main player
                 if game.player == "martin2005@gmail.com":
@@ -54,10 +58,15 @@ async def process_event(websocket):
                 action, data = game.play(request_data["data"])
                 message = await send(websocket, action, data)
                 logger.debug(f">>> {message}")
-            elif request_data['event'] == "game_over":
-                # finish game here
-                pass
-
+            elif request_data['event'] == GAMEOVER:
+                # recuperar y remover el game del diccionario
+                game = games.pop(request_data["data"]["game_id"], None)
+                # imprimr resultado
+                if game:
+                    game_result, message = game.game_over(request_data["data"])
+                    logger.info(f"{game_result.value.upper()}: {message}")
+                    # borrarlo
+                    del game
             else:
                 logger.warning(f"<<< unknown event: {request_data['event']} - data: {request_data['data']}")
 
