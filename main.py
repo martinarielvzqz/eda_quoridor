@@ -7,17 +7,21 @@ from quoridor import Quoridor
 from log import logger
 from utils import Config
 
+# contenedor de juegos
+# gameid: Quoridor instance
+games = {}
+
 
 async def send(websocket, action, data):
-    """Build a send a message to the server."""
+    """Build, send to the server and return a message."""
     message = json.dumps(
         {
             'action': action,
             'data': data
         }
     )
-    logger.debug(f">>> {message}")
     await websocket.send(message)
+    return message
 
 
 async def process_event(websocket):
@@ -28,15 +32,35 @@ async def process_event(websocket):
             request_data = json.loads(request)
             logger.debug(f"<<< event: {request_data['event']} - data: {request_data['data']}")
 
-            if request_data['event'] == "challenge" and request_data['data']['opponent'] == "martinv0001":
-                await send(websocket, 'accept_challenge', {
-                    'challenge_id': request_data['data']['challenge_id']
-                })
+            if request_data['event'] == "list_users":
+                pass
+
+            elif request_data['event'] == "challenge":
+                if request_data['data']['opponent'] == "martinv0001":
+                    await send(websocket, 'accept_challenge', {
+                        'challenge_id': request_data['data']['challenge_id']
+                    })
             elif request_data['event'] == 'your_turn':
-                board_graph = Quoridor.draw_board(request_data['data']['board'])
-                logger.debug(f"board\n{board_graph}")
-                action, data = Quoridor.play(request_data)
-                await send(websocket, action, data)
+                # get or create the corresponding game and play
+                if request_data["data"]["game_id"] not in games:
+                    games[request_data["data"]["game_id"]] = Quoridor(request_data["data"])
+
+                game = games[request_data["data"]["game_id"]]
+
+                # only draw board for main player
+                if game.player == "martin2005@gmail.com":
+                    board_graph = game.draw_board(request_data['data']['board'])
+                    logger.debug(f"board\n{board_graph}")
+                action, data = game.play(request_data["data"])
+                message = await send(websocket, action, data)
+                logger.debug(f">>> {message}")
+            elif request_data['event'] == "game_over":
+                # finish game here
+                pass
+
+            else:
+                logger.warning(f"<<< unknown event: {request_data['event']} - data: {request_data['data']}")
+
         except Exception as e:
             logger.error(f"exception {e}")
 
