@@ -11,10 +11,6 @@ class Quoridor:
     COORDINATES_VALUES = "0a1b2c3d4e5f6g7h8"
     BOARD_SIZE = len(COORDINATES_VALUES)
 
-    VICTORY = 0
-    DEFEAT = 1
-    DRAW = 2
-
     def __init__(self, data: Dict):
         self.game_id = data["game_id"]
         self.board = [[None for _ in range(Quoridor.BOARD_SIZE)] for _ in range(Quoridor.BOARD_SIZE)]
@@ -80,10 +76,8 @@ class Quoridor:
                     from_col = col
                     to_col = col
                     break
-        # to_row = from_row + (1 if side == 'N' else -1)
         to_row = from_row + (2 if self.side == NORTH else -2)
-        # if pawn_board[to_row][from_col] is None:
-        #     to_row = to_row + (1 if side == 'N' else -1)
+
         return 'move', {
             'game_id': data['game_id'],
             'turn_token': data['turn_token'],
@@ -93,7 +87,6 @@ class Quoridor:
             'to_col': to_col/2,
         }
 
-    # @classmethod
     def _place_wall(self, data):
         return 'wall', {
             'game_id': data['game_id'],
@@ -104,7 +97,7 @@ class Quoridor:
         }
 
     def game_over(self, data):
-        """Receive he game over event and determine the winner"""
+        """Receive the data of game_over event and determines the winner"""
 
         score_player = data["score_1"] if self.side == NORTH else data["score_2"]
         score_opponent = data["score_2"] if self.side == NORTH else data["score_1"]
@@ -116,4 +109,3 @@ class Quoridor:
         message = f"{self.player}({self.side}) WON ({score_player} points) VS {self.opponent}({SOUTH if self.side == NORTH else NORTH}) LOSE with {score_opponent} points"
 
         return result, message
-
