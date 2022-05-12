@@ -1,6 +1,11 @@
 from random import randint
 from typing import Dict
 
+from constants import (
+    NORTH, SOUTH,
+    WIN, LOSS, TIE
+)
+
 
 class Quoridor:
     COORDINATES_VALUES = "0a1b2c3d4e5f6g7h8"
@@ -10,8 +15,8 @@ class Quoridor:
         self.game_id = data["game_id"]
         self.board = [[None for _ in range(Quoridor.BOARD_SIZE)] for _ in range(Quoridor.BOARD_SIZE)]
         self.side = data["side"]
-        self.player = data["player_1"] if data["side"] == "N" else data["player_2"]
-        self.opponent = data["player_2"] if data["side"] == "N" else data["player_1"]
+        self.player = data["player_1"] if data["side"] == NORTH else data["player_2"]
+        self.opponent = data["player_2"] if data["side"] == NORTH else data["player_1"]
 
     def draw_board(self, board: str):
         """Make a chart of the board and returns it as a string
@@ -71,10 +76,8 @@ class Quoridor:
                     from_col = col
                     to_col = col
                     break
-        # to_row = from_row + (1 if side == 'N' else -1)
-        to_row = from_row + (2 if self.side == 'N' else -2)
-        # if pawn_board[to_row][from_col] is None:
-        #     to_row = to_row + (1 if side == 'N' else -1)
+        to_row = from_row + (2 if self.side == NORTH else -2)
+
         return 'move', {
             'game_id': data['game_id'],
             'turn_token': data['turn_token'],
@@ -84,7 +87,6 @@ class Quoridor:
             'to_col': to_col/2,
         }
 
-    # @classmethod
     def _place_wall(self, data):
         return 'wall', {
             'game_id': data['game_id'],
@@ -94,3 +96,16 @@ class Quoridor:
             'orientation': 'h' if randint(0, 1) == 0 else 'v'
         }
 
+    def game_over(self, data):
+        """Receive the data of game_over event and determines the winner"""
+
+        score_player = data["score_1"] if self.side == NORTH else data["score_2"]
+        score_opponent = data["score_2"] if self.side == NORTH else data["score_1"]
+
+        result = TIE if score_player == score_opponent else (
+            WIN if score_player > score_opponent else LOSS
+        )
+
+        message = f"{self.player}({self.side}) WON ({score_player} points) VS {self.opponent}({SOUTH if self.side == NORTH else NORTH}) LOSE with {score_opponent} points"
+
+        return result, message
