@@ -1,17 +1,10 @@
 from random import randint
 from typing import Dict
-from enum import Enum, auto
 
 from constants import (
-    NORTH, SOUTH
+    NORTH, SOUTH,
+    WIN, LOSS, TIE
 )
-
-
-class GameResult(Enum):
-    VICTORY = "win"
-    DEFEAT = "lose"
-    DRAW = "tie"
-
 
 
 class Quoridor:
@@ -116,8 +109,8 @@ class Quoridor:
         score_player = data["score_1"] if self.side == NORTH else data["score_2"]
         score_opponent = data["score_2"] if self.side == NORTH else data["score_1"]
 
-        result = GameResult.DRAW if score_player == score_opponent else (
-            GameResult.VICTORY if score_player > score_opponent else GameResult.DEFEAT
+        result = TIE if score_player == score_opponent else (
+            WIN if score_player > score_opponent else LOSS
         )
 
         message = f"{self.player}({self.side}) WON ({score_player} points) VS {self.opponent}({SOUTH if self.side == NORTH else NORTH}) LOSE with {score_opponent} points"

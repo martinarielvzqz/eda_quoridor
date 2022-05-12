@@ -14,3 +14,8 @@ WALL = "wall"
 NORTH = "N"
 SOUTH = "S"
 WALL = "-|"
+
+# game result
+WIN = "win"
+LOSS = "loss"
+TIE = "tie"
