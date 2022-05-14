@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 PyYAML = "==6.0"
 websockets = "==10.3"
+pytest = "==7.1.2"
+ipdb = "==0.13.9"
 
 [dev-packages]
 
