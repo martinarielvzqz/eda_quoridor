@@ -7,7 +7,8 @@ from constants import (
     LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
 )
 from log import logger
-from quoridor import Quoridor
+# from quoridor import Quoridor
+from quoridor_list import QuoridorList
 from utils import Config
 
 # contenedor de juegos
@@ -35,7 +36,8 @@ async def process_event(websocket):
                 )
 
             elif request_data["event"] == CHALLENGE:
-                if request_data["data"]["opponent"] == "martinv0001":   # only for dev
+                logger.debug(f"<<< {request_data}")
+                if request_data["data"]["opponent"] in ["martinv0001", "martin2005@gmail.com"]:   # only for dev
                     await send(
                         websocket,
                         "accept_challenge",
@@ -43,16 +45,9 @@ async def process_event(websocket):
                     )
 
             elif request_data["event"] == YOUR_TURN:
-                # TODO: log each game in a different log
+                logger.debug(f"<<< {request_data}")
 
-                logger.debug(f"<<< {request_data['data']}")
-
-                # get or create the corresponding game and play
-                if request_data["data"]["game_id"] not in games:
-                    games[request_data["data"]["game_id"]] = Quoridor(
-                        request_data["data"]
-                    )
-                game = games[request_data["data"]["game_id"]]
+                game = QuoridorList.get_or_create(request_data["data"])
 
                 if game.player == "martin2005@gmail.com":   # only for dev
                     board_graph = game.draw_board(request_data["data"]["board"])
@@ -61,14 +56,7 @@ async def process_event(websocket):
                 message = await send(websocket, action, data)
                 logger.debug(f">>> {message}")
             elif request_data["event"] == GAMEOVER:
-                # recuperar y remover el game del diccionario
-                game = games.pop(request_data["data"]["game_id"], None)
-                # imprimr resultado
-                if game:
-                    game_result, message = game.game_over(request_data["data"])
-                    logger.info(f"{game_result.upper()}: {message}")
-                    # borrarlo
-                    del game
+                QuoridorList.finish_game(request_data["data"])
             else:
                 logger.warning(
                     f"<<< unknown event: {request_data['event']} - data: {request_data['data']}"
