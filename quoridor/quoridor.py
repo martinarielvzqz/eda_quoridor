@@ -1,10 +1,8 @@
 from random import randint
-import re
-from turtle import st
 from typing import Dict
 
-from constants import (
-    NORTH_PAWN, SOUTH_PAWN, HORIZONTAL_WALL, VERTICAL_WALL, EMPTY,
+from quoridor.constants import (
+    NORTH_PAWN, SOUTH_PAWN, VERTICAL_WALL, EMPTY,
     NORTH, SOUTH, EAST, WEST,
     WIN, LOSS, TIE
 )
@@ -159,7 +157,12 @@ class Quoridor:
             WIN if score_player > score_opponent else LOSS
         )
 
-        message = f"{self.player}({self.side}) WON ({score_player} points) VS {self.opponent}({SOUTH_PAWN if self.side == NORTH_PAWN else NORTH_PAWN}) LOSE with {score_opponent} points"
+        message = (
+            f"{self.player}({self.side}) WON (with {score_player} points) VS "
+            f"{self.opponent}({SOUTH_PAWN if self.side == NORTH_PAWN else NORTH_PAWN}) "
+            f"LOSE (with {score_opponent} points)"
+
+        )
 
         return result, message
 

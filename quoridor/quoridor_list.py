@@ -1,4 +1,4 @@
-from quoridor import Quoridor
+# from quoridor.quoridor import Quoridor
 
 
 class QuoridorList:
@@ -13,11 +13,8 @@ class QuoridorList:
 
         return cls.games[data["game_id"]]
 
-
     @classmethod
     def finish_game(cls, data):
         """"""
         game = cls.games.pop(data["game_id"], None)
         return game.game_over(data)
-
-

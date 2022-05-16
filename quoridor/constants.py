@@ -27,4 +27,3 @@ WEST = "W"
 WIN = "win"
 LOSS = "loss"
 TIE = "tie"
-

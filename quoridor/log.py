@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from utils import Config
+from quoridor.utils import Config
 
 formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname)s - %(message)s")
 

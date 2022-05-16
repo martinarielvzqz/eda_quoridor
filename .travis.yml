@@ -2,7 +2,11 @@ language: python
 python:
   - 3.8
 install:
-  - pip install -U pytest
-script: pytest # run tests
-
+  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
+script:
+  - flake8
+#   - coverage run -m pytest
+# after_success:
+#   - coveralls
 

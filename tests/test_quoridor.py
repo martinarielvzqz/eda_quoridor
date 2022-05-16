@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from quoridor import Quoridor
+from quoridor.quoridor import Quoridor
 
 
 class TestQuoridor(TestCase):
@@ -10,7 +10,7 @@ class TestQuoridor(TestCase):
             'score_1': -12.0,
             'score_2': -49.0,
             'walls': 9.0,
-            'board': '        N     N                                                          |                *      -*-       |                                                                N                                 S|    S     S     *                |                                               ',
+            'board': '        N     N                                                          |                *      -*-       |                                                                N                                 S|    S     S     *                |                                               ',  # noqa
             'side': 'S', 'player_1':
             'martinv0001',
             'player_2': 'martin2005@gmail.com',

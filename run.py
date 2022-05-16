@@ -3,13 +3,13 @@ import json
 import sys
 import websockets
 
-from constants import (
+from quoridor.constants import (
     LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
 )
-from log import logger
+from quoridor.log import logger
 # from quoridor import Quoridor
-from quoridor_list import QuoridorList
-from utils import Config
+from quoridor.quoridor_list import QuoridorList
+from quoridor.utils import Config
 
 # contenedor de juegos
 # gameid: Quoridor instance
@@ -37,12 +37,16 @@ async def process_event(websocket):
 
             elif request_data["event"] == CHALLENGE:
                 logger.debug(f"<<< {request_data}")
-                if request_data["data"]["opponent"] in ["martinv0001", "martin2005@gmail.com"]:   # only for dev
-                    await send(
-                        websocket,
-                        "accept_challenge",
-                        {"challenge_id": request_data["data"]["challenge_id"]},
-                    )
+
+                # only for dev
+                if request_data["data"]["opponent"] not in ["martinv0001", "martin2005@gmail.com"]:
+                    continue
+
+                await send(
+                    websocket,
+                    "accept_challenge",
+                    {"challenge_id": request_data["data"]["challenge_id"]},
+                )
 
             elif request_data["event"] == YOUR_TURN:
                 logger.debug(f"<<< {request_data}")
