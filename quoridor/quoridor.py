@@ -8,6 +8,10 @@ from quoridor.constants import (
 )
 
 
+class QuoridorException(Exception):
+    pass
+
+
 class Quoridor:
     COORDINATES_VALUES = "0a1b2c3d4e5f6g7h8"
     BOARD_SIZE = len(COORDINATES_VALUES)
@@ -45,6 +49,13 @@ class Quoridor:
         h |
         8 |  S     S     S
         """
+
+        if board is None or not isinstance(board, str):
+            raise QuoridorException("Invalid board type")
+
+        if len(board) != Quoridor.BOARD_SIZE * Quoridor.BOARD_SIZE:
+            raise QuoridorException("Invalid board size")
+
         board_graph = f"   {Quoridor.COORDINATES_VALUES}\n"
         board_graph += f"   {'-'* Quoridor.BOARD_SIZE}\n"
 
