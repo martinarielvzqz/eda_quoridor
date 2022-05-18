@@ -1,12 +1,15 @@
 from random import randint
 from typing import Dict
 
-from quoridor.constants import (
-    NORTH_PAWN, SOUTH_PAWN, VERTICAL_WALL, EMPTY,
-    NORTH, SOUTH, EAST, WEST,
-    WIN, LOSS, TIE
-)
+# from quoridor.constants import (
+#     NORTH_PAWN, SOUTH_PAWN, VERTICAL_WALL, EMPTY,
+#     NORTH, SOUTH, EAST, WEST,
+#     WIN, LOSS, TIE
+# )
 
+from quoridor.constants import(
+    Board, Direction, Result
+)
 
 class QuoridorException(Exception):
     pass
@@ -45,8 +48,8 @@ class Quoridor:
         self.game_id = data["game_id"]
         self.board = [[None for _ in range(Quoridor.BOARD_SIZE)] for _ in range(Quoridor.BOARD_SIZE)]
         self.side = data["side"]
-        self.player = data["player_1"] if data["side"] == NORTH else data["player_2"]
-        self.opponent = data["player_2"] if data["side"] == NORTH else data["player_1"]
+        self.player = data["player_1"] if data["side"] == Board.NORTH_PAWN else data["player_2"]
+        self.opponent = data["player_2"] if data["side"] == Board.NORTH_PAWN else data["player_1"]
 
     @classmethod
     def draw_board(cls, board: str):
@@ -111,18 +114,18 @@ class Quoridor:
         if a wall is found, HORIZONTAL_WALL or VERTICAL_WALL is returned
         if a pawn is found, PAWN_NORTH or PAWN_SOUTH is returned
         """
-        vertical_movement = 0 if direction not in [NORTH, SOUTH] else (1 if direction == SOUTH else -1)
-        horizontal_movement = 0 if direction not in [EAST, WEST] else (1 if direction == WEST else -1)
+        vertical_movement = 0 if direction not in [Direction.NORTH, Direction.SOUTH] else (1 if direction == Direction.SOUTH else -1)
+        horizontal_movement = 0 if direction not in [Direction.EAST, Direction.WEST] else (1 if direction == Direction.WEST else -1)
 
-        if pawn[1] == 0 and direction == WEST:
-            return VERTICAL_WALL
+        if pawn[1] == 0 and direction == Direction.WEST:
+            return Board.VERTICAL_WALL
 
-        if pawn[1] == 16 and direction == EAST:
-            return VERTICAL_WALL
+        if pawn[1] == 16 and direction == Direction.EAST:
+            return Board.VERTICAL_WALL
 
-        if self.board[pawn[0]+(1*vertical_movement)][pawn[1]+(1*horizontal_movement)] == EMPTY:
-            if self.board[pawn[0]+(2*vertical_movement)][pawn[1]+(2*horizontal_movement)] == EMPTY:
-                return EMPTY
+        if self.board[pawn[0]+(1*vertical_movement)][pawn[1]+(1*horizontal_movement)] == Board.EMPTY:
+            if self.board[pawn[0]+(2*vertical_movement)][pawn[1]+(2*horizontal_movement)] == Board.EMPTY:
+                return Board.EMPTY
             else:
                 # return NORTH_PAWN or SOUTH_PAWN
                 return self.board[pawn[0]+(2*vertical_movement)][pawn[1]+(2*horizontal_movement)]
@@ -137,7 +140,7 @@ class Quoridor:
                 self.board[row][col] = data["board"][(row*Quoridor.BOARD_SIZE)+col]
 
         my_pawns = self._get_pawns(self.side)
-        forward_direction = SOUTH if self.side == NORTH_PAWN else NORTH
+        forward_direction = Direction.SOUTH if self.side == Board.NORTH_PAWN else Direction.NORTH
 
         # find the first pawn able to advance
         for pawn in my_pawns:
@@ -146,14 +149,14 @@ class Quoridor:
             to_row = from_row
             to_col = from_col
 
-            if self._check_movement(pawn, forward_direction) == EMPTY:
-                to_row += (2*(1 if self.side == NORTH_PAWN else -1))
+            if self._check_movement(pawn, forward_direction) == Board.EMPTY:
+                to_row += (2*(1 if self.side == Board.NORTH_PAWN else -1))
             else:
                 if pawn[1] <= 14:
-                    if self._check_movement(pawn, EAST) == EMPTY:
+                    if self._check_movement(pawn, Direction.EAST) == Board.EMPTY:
                         to_col += 2
                 if pawn[1] >= 2:
-                    if self._check_movement(pawn, WEST) == EMPTY:
+                    if self._check_movement(pawn, Direction.WEST) == Board.EMPTY:
                         to_col -= 2
         else:
             return self._place_wall(data)
@@ -179,16 +182,16 @@ class Quoridor:
     def game_over(self, data):
         """Receive the data of game_over event and determines the winner"""
 
-        score_player = data["score_1"] if self.side == NORTH_PAWN else data["score_2"]
-        score_opponent = data["score_2"] if self.side == NORTH_PAWN else data["score_1"]
+        score_player = data["score_1"] if self.side == Board.NORTH_PAWN else data["score_2"]
+        score_opponent = data["score_2"] if self.side == Board.NORTH_PAWN else data["score_1"]
 
-        result = TIE if score_player == score_opponent else (
-            WIN if score_player > score_opponent else LOSS
+        result = Result.TIE if score_player == score_opponent else (
+            Result.WIN if score_player > score_opponent else Result.LOSS
         )
 
         message = (
             f"{self.player}({self.side}) WON (with {score_player} points) VS "
-            f"{self.opponent}({SOUTH_PAWN if self.side == NORTH_PAWN else NORTH_PAWN}) "
+            f"{self.opponent}({Board.SOUTH_PAWN if self.side == Board.NORTH_PAWN else Board.NORTH_PAWN}) "
             f"LOSE (with {score_opponent} points)"
 
         )
@@ -207,7 +210,7 @@ class Quoridor:
         stop = Quoridor.BOARD_SIZE
         step = 2
 
-        if side == NORTH_PAWN:
+        if side == Board.NORTH_PAWN:
             # iterate from south to north
             start, stop = stop-1, start-1
             step *= -1

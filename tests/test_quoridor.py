@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from quoridor.constants import (
-    NORTH_PAWN
+    Board
 )
 from quoridor.quoridor import Quoridor, QuoridorException
 
@@ -44,8 +44,8 @@ class TestQuoridor(TestCase):
     def test_game_creation(self):
         game = Quoridor(self.data)
         assert isinstance(game, Quoridor)
-        assert game.player == self.player_name_1 if game.side == NORTH_PAWN else self.player_name_2
-        assert game.opponent == self.player_name_2 if game.side == NORTH_PAWN else self.player_name_1
+        assert game.player == self.player_name_1 if game.side == Board.NORTH_PAWN else self.player_name_2
+        assert game.opponent == self.player_name_2 if game.side == Board.NORTH_PAWN else self.player_name_1
 
     def test_game_creation_with_invalid_data(self):
         pass

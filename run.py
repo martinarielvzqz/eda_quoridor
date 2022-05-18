@@ -3,9 +3,10 @@ import json
 import sys
 import websockets
 
-from quoridor.constants import (
-    LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
-)
+# from quoridor.constants import (
+#     LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
+# )
+from quoridor.constants import Event
 from quoridor.log import logger
 from quoridor.quoridor import QuoridorList, Quoridor
 from quoridor.utils import Config
@@ -27,12 +28,12 @@ async def process_event(websocket):
             request = await websocket.recv()
             request_data = json.loads(request)
 
-            if request_data["event"] == LIST_USERS:
+            if request_data["event"] == Event.LIST_USERS:
                 logger.info(
                     f"<<< event: {request_data['event']} - data: {request_data['data']}"
                 )
 
-            elif request_data["event"] == CHALLENGE:
+            elif request_data["event"] == Event.CHALLENGE:
                 logger.info(f"<<< {request_data}")
 
                 # only for dev
@@ -45,7 +46,7 @@ async def process_event(websocket):
                     {"challenge_id": request_data["data"]["challenge_id"]},
                 )
 
-            elif request_data["event"] == YOUR_TURN:
+            elif request_data["event"] == Event.YOUR_TURN:
                 logger.debug(f"<<< {request_data}")
 
                 game = QuoridorList.get_or_create(request_data["data"])
@@ -56,7 +57,7 @@ async def process_event(websocket):
                 action, data = game.play(request_data["data"])
                 message = await send(websocket, action, data)
                 logger.debug(f">>> {message}")
-            elif request_data["event"] == GAMEOVER:
+            elif request_data["event"] == Event.GAMEOVER:
                 logger.debug(f"<<< {request_data}")
                 QuoridorList.finish_game(request_data["data"])
             else:
