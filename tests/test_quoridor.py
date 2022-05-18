@@ -47,6 +47,9 @@ class TestQuoridor(TestCase):
         assert game.player == self.player_name_1 if game.side == NORTH_PAWN else self.player_name_2
         assert game.opponent == self.player_name_2 if game.side == NORTH_PAWN else self.player_name_1
 
+    def test_game_creation_with_invalid_data(self):
+        pass
+
     def test_drawn_valid_board(self):
         expected_board = (
             "   0a1b2c3d4e5f6g7h8\n"

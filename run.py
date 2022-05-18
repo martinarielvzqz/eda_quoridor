@@ -7,13 +7,10 @@ from quoridor.constants import (
     LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
 )
 from quoridor.log import logger
-# from quoridor import Quoridor
-from quoridor.quoridor_list import QuoridorList
+from quoridor.quoridor import QuoridorList, Quoridor
 from quoridor.utils import Config
 
-# contenedor de juegos
-# gameid: Quoridor instance
-games = {}
+# games = {}
 
 
 async def send(websocket, action, data):
@@ -31,12 +28,12 @@ async def process_event(websocket):
             request_data = json.loads(request)
 
             if request_data["event"] == LIST_USERS:
-                logger.debug(
+                logger.info(
                     f"<<< event: {request_data['event']} - data: {request_data['data']}"
                 )
 
             elif request_data["event"] == CHALLENGE:
-                logger.debug(f"<<< {request_data}")
+                logger.info(f"<<< {request_data}")
 
                 # only for dev
                 if request_data["data"]["opponent"] not in ["martinv0001", "martin2005@gmail.com"]:
@@ -54,12 +51,13 @@ async def process_event(websocket):
                 game = QuoridorList.get_or_create(request_data["data"])
 
                 if game.player == "martin2005@gmail.com":   # only for dev
-                    board_graph = game.draw_board(request_data["data"]["board"])
+                    board_graph = Quoridor.draw_board(request_data["data"]["board"])
                     logger.debug(f"board\n{board_graph}")
                 action, data = game.play(request_data["data"])
                 message = await send(websocket, action, data)
                 logger.debug(f">>> {message}")
             elif request_data["event"] == GAMEOVER:
+                logger.debug(f"<<< {request_data}")
                 QuoridorList.finish_game(request_data["data"])
             else:
                 logger.warning(
