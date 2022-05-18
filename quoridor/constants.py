@@ -1,29 +1,31 @@
 # events (received)
-LIST_USERS = "list_users"
-CHALLENGE = "challenge"
-YOUR_TURN = "your_turn"
-GAMEOVER = "game_over"
+EVENT_LIST_USERS = "list_users"
+EVENT_CHALLENGE = "challenge"
+EVENT_YOUR_TURN = "your_turn"
+EVENT_GAME_OVER = "game_over"
 
 # actions (sended)
-ACCEPT_CHALLENGE = "accept_challenge"
-CHALLENGE = "challenge"
-MOVE = "move"
-WALL = "wall"
+ACTION_ACCEPT_CHALLENGE = "accept_challenge"
+# ACTION_CHALLENGE = "challenge"
+ACTION_MOVE = "move"
+ACTION_WALL = "wall"
 
 # board cells
-NORTH_PAWN = "N"
-SOUTH_PAWN = "S"
-HORIZONTAL_WALL = "-"
-VERTICAL_WALL = "|"
-EMPTY = " "
+CELL_NORTH_PAWN = "N"
+CELL_SOUTH_PAWN = "S"
+CELL_HORIZONTAL_WALL = "-"
+CELL_VERTICAL_WALL = "|"
+CELL_EMPTY = " "
+# CELL_WALL = "-|"
+# CELL_PAWN = "NS"
 
 # directions
-NORTH = "N"
-SOUTH = "S"
-EAST = "E"
-WEST = "W"
+DIRECTION_NORTH = 0
+DIRECTION_SOUTH = 1
+DIRECTION_EAST = 2
+DIRECTION_WEST = 3
 
 # game result
-WIN = "win"
-LOSS = "loss"
-TIE = "tie"
+RESULT_WIN = 0
+RESULT_LOSS = 1
+RESULT_TIE = 2
