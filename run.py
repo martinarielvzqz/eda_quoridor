@@ -3,17 +3,15 @@ import json
 import sys
 import websockets
 
-# from quoridor.constants import (
-#     LIST_USERS, CHALLENGE, YOUR_TURN, GAMEOVER
-# )
 from quoridor.constants import (
-    EVENT_CHALLENGE, EVENT_LIST_USERS, EVENT_GAME_OVER, EVENT_YOUR_TURN
+    EVENT_CHALLENGE,
+    EVENT_LIST_USERS,
+    EVENT_GAME_OVER,
+    EVENT_YOUR_TURN,
 )
 from quoridor.log import logger
 from quoridor.quoridor import QuoridorList, Quoridor
 from quoridor.utils import Config
-
-# games = {}
 
 
 async def send(websocket, action, data):
@@ -39,7 +37,10 @@ async def process_event(websocket):
                 logger.info(f"<<< {request_data}")
 
                 # only for dev
-                if request_data["data"]["opponent"] not in ["martinv0001", "martin2005@gmail.com"]:
+                if request_data["data"]["opponent"] not in [
+                    "martinv0001",
+                    "martin2005@gmail.com",
+                ]:
                     continue
 
                 await send(
@@ -53,7 +54,7 @@ async def process_event(websocket):
 
                 game = QuoridorList.get_or_create(request_data["data"])
 
-                if game.player == "martin2005@gmail.com":   # only for dev
+                if game.player == "martin2005@gmail.com":  # only for dev
                     board_graph = Quoridor.draw_board(request_data["data"]["board"])
                     logger.debug(f"board\n{board_graph}")
                 action, data = game.play(request_data["data"])
