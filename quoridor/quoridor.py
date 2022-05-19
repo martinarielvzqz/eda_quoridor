@@ -51,18 +51,23 @@ class Quoridor:
     BOARD_SIZE = len(COORDINATES_VALUES)
 
     def __init__(self, data: Dict):
-        self.game_id = data["game_id"]
-        self.board = [
-            [None for _ in range(Quoridor.BOARD_SIZE)]
-            for _ in range(Quoridor.BOARD_SIZE)
-        ]
-        self.side = data["side"]
-        self.player = (
-            data["player_1"] if data["side"] == CELL_NORTH_PAWN else data["player_2"]
-        )
-        self.opponent = (
-            data["player_2"] if data["side"] == CELL_NORTH_PAWN else data["player_1"]
-        )
+        try:
+            self.game_id = data["game_id"]
+            self.board = [
+                [None for _ in range(Quoridor.BOARD_SIZE)]
+                for _ in range(Quoridor.BOARD_SIZE)
+            ]
+            self.__update_board(data["board"])
+            self.side = data["side"]
+            self.player = (
+                data["player_1"] if data["side"] == CELL_NORTH_PAWN else data["player_2"]
+            )
+            self.opponent = (
+                data["player_2"] if data["side"] == CELL_NORTH_PAWN else data["player_1"]
+            )
+        except KeyError:
+            raise QuoridorException("Invalid intilization data")
+
 
     @classmethod
     def draw_board(cls, board: str):
@@ -168,13 +173,21 @@ class Quoridor:
             pawn[1] + (1 * horizontal_movement)
         ]
 
-    def _move_pawn(self, data):
-        # update board
+    def __update_board(self, board):
+        """"""
+        if board is None or not isinstance(board, str):
+            raise QuoridorException("Invalid board type")
+
+        if len(board) != Quoridor.BOARD_SIZE * Quoridor.BOARD_SIZE:
+            raise QuoridorException("Invalid board size")
+
         for row in range(Quoridor.BOARD_SIZE):
             for col in range(Quoridor.BOARD_SIZE):
-                self.board[row][col] = data["board"][(row * Quoridor.BOARD_SIZE) + col]
+                self.board[row][col] = board[(row * Quoridor.BOARD_SIZE) + col]
 
-        my_pawns = self._get_pawns(self.side)
+    def _move_pawn(self, data):
+        self.__update_board(data["board"])
+        my_pawns = self.__get_pawns(self.side)
         forward_direction = (
             DIRECTION_SOUTH if self.side == CELL_NORTH_PAWN else DIRECTION_NORTH
         )
@@ -246,10 +259,10 @@ class Quoridor:
 
         return result, message
 
-    def _get_pawns(self, side):
+    def __get_pawns(self, side):
         """
         Get a list of coordinantes of each pawn of the indicated side.
-        The most advanced pawns are return first
+        The pawns most advanced and the most to thhe west, are returned first
         """
         pawns = []
 
@@ -264,7 +277,7 @@ class Quoridor:
             step *= -1
 
         for row in range(start, stop, step):
-            for col in range(start, stop, step):
+            for col in range(0, Quoridor.BOARD_SIZE, 2):
                 if self.board[row][col] == side:
                     pawns.append((row, col))
 
