@@ -11,12 +11,12 @@ from quoridor.constants import (
     DIRECTION_SOUTH,
     DIRECTION_EAST,
     DIRECTION_WEST,
-    GAMES_DIR,
-    GAME_INIT,
-    GAME_EVENT,
-    GAME_ACTION,
-    GAME_OVER,
-    GAME_BOARD,
+    LOG_GAMES_DIR,
+    LOG_GAME_INIT,
+    LOG_GAME_EVENT,
+    LOG_GAME_ACTION,
+    LOG_GAME_OVER,
+    LOG_GAME_BOARD,
     RESULT_LOSS,
     RESULT_TIE,
     RESULT_WIN,
@@ -71,11 +71,11 @@ class Quoridor:
             data["player_2"] if data["side"] == CELL_NORTH_PAWN else data["player_1"]
         )
         self.logger = get_logger((
-            f"{GAMES_DIR}"
+            f"{LOG_GAMES_DIR}"
             f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')}_"
             f"{data['player_1']}_vs_{data['player_2']}"
         ))
-        self.logger.info(f"{GAME_INIT} {data}")
+        self.logger.info(f"{LOG_GAME_INIT} {data}")
 
     @classmethod
     def draw_board(cls, board: str):
@@ -125,9 +125,9 @@ class Quoridor:
 
     def play(self, data):
         """"""
-        self.logger.info(f"{GAME_EVENT} {data}")
+        self.logger.info(f"{LOG_GAME_EVENT} {data}")
         # TODO: draw the board or not, should be configurable
-        self.logger.info(f"{GAME_BOARD} \n{Quoridor.draw_board(data['board'])}")
+        self.logger.info(f"{LOG_GAME_BOARD} \n{Quoridor.draw_board(data['board'])}")
 
         # if randint(0, 4) >= 1:
         #     strategy = self._move_pawn
@@ -136,7 +136,7 @@ class Quoridor:
 
         # return strategy(data)
         move = self._move_pawn(data)
-        self.logger.info(f"{GAME_ACTION} {move}")
+        self.logger.info(f"{LOG_GAME_ACTION} {move}")
         return move
 
     def _check_movement(self, pawn, direction):
@@ -247,7 +247,7 @@ class Quoridor:
 
     def game_over(self, data):
         """Receive the data of game_over event and determines the winner"""
-        self.logger.info(f"{GAME_OVER} {data}")
+        self.logger.info(f"{LOG_GAME_OVER} {data}")
 
         score_player = (
             data["score_1"] if self.side == CELL_NORTH_PAWN else data["score_2"]

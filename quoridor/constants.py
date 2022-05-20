@@ -1,3 +1,6 @@
+import os
+
+
 # events (received)
 EVENT_LIST_USERS = "list_users"
 EVENT_CHALLENGE = "challenge"
@@ -31,10 +34,11 @@ RESULT_LOSS = 1
 RESULT_TIE = 2
 
 # log
-LOG_FILE = "quoridor.log"
-GAMES_DIR = "games/"
-GAME_INIT = "GAME_INIT"
-GAME_EVENT = "GAME_EVENT"
-GAME_ACTION = "GAME_ACTION"
-GAME_OVER = "GAME_OVER"
-GAME_BOARD = "GAME_BOARD"
+LOG_DIR = "logs"
+LOG_FILE = LOG_DIR + os.sep + "quoridor.log"
+LOG_GAMES_DIR = LOG_DIR + os.sep + "games"
+LOG_GAME_INIT = "GAME_INIT"
+LOG_GAME_EVENT = "GAME_EVENT"
+LOG_GAME_BOARD = "GAME_BOARD"
+LOG_GAME_ACTION = "GAME_ACTION"
+LOG_GAME_OVER = "GAME_OVER"

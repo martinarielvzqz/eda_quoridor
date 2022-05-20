@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 import sys
 import websockets
 
@@ -9,11 +8,10 @@ from quoridor.constants import (
     EVENT_CHALLENGE,
     EVENT_LIST_USERS,
     EVENT_GAME_OVER,
-    EVENT_YOUR_TURN,
-    GAMES_DIR
+    EVENT_YOUR_TURN
 )
 from quoridor.log import logger
-from quoridor.quoridor import QuoridorList, Quoridor
+from quoridor.quoridor import QuoridorList
 from quoridor.utils import Config
 
 
@@ -23,6 +21,7 @@ async def process_event(websocket):
         try:
             request = await websocket.recv()
             request_data = json.loads(request)
+            logger.info(f"<<< EVENT: {request_data}")
 
             if request_data["event"] == EVENT_LIST_USERS:
                 logger.info(
@@ -95,7 +94,6 @@ if __name__ == "__main__":
         auth_token = Config.get("token", None)
 
     if auth_token:
-        os.makedirs(GAMES_DIR, exist_ok=True)
         main(auth_token)
     else:
         logger.error("the token es missing")
