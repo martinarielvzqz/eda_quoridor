@@ -1,24 +1,20 @@
 import asyncio
 import json
+import os
 import sys
 import websockets
 
 from quoridor.constants import (
+    ACTION_ACCEPT_CHALLENGE,
     EVENT_CHALLENGE,
     EVENT_LIST_USERS,
     EVENT_GAME_OVER,
     EVENT_YOUR_TURN,
+    GAMES_DIR
 )
 from quoridor.log import logger
 from quoridor.quoridor import QuoridorList, Quoridor
 from quoridor.utils import Config
-
-
-async def send(websocket, action, data):
-    """Build, send to the server and return a message."""
-    message = json.dumps({"action": action, "data": data})
-    await websocket.send(message)
-    return message
 
 
 async def process_event(websocket):
@@ -35,31 +31,23 @@ async def process_event(websocket):
 
             elif request_data["event"] == EVENT_CHALLENGE:
                 logger.info(f"<<< {request_data}")
-
                 # only for dev
-                if request_data["data"]["opponent"] not in [
-                    "martinv0001",
-                    "martin2005@gmail.com",
-                ]:
-                    continue
-
-                await send(
-                    websocket,
-                    "accept_challenge",
-                    {"challenge_id": request_data["data"]["challenge_id"]},
-                )
+                # if request_data["data"]["opponent"] not in [
+                #     "martinv0001",
+                #     "martin2005@gmail.com",
+                # ]:
+                #     continue
+                message = json.dumps({
+                    "action": ACTION_ACCEPT_CHALLENGE,
+                    "data": {"challenge_id": request_data["data"]["challenge_id"]}
+                })
+                await websocket.send(message)
 
             elif request_data["event"] == EVENT_YOUR_TURN:
-                logger.debug(f"<<< {request_data}")
-
                 game = QuoridorList.get_or_create(request_data["data"])
+                move = game.play(request_data["data"])
+                await websocket.send(json.dumps(move))
 
-                if game.player == "martin2005@gmail.com":  # only for dev
-                    board_graph = Quoridor.draw_board(request_data["data"]["board"])
-                    logger.debug(f"board\n{board_graph}")
-                action, data = game.play(request_data["data"])
-                message = await send(websocket, action, data)
-                logger.debug(f">>> {message}")
             elif request_data["event"] == EVENT_GAME_OVER:
                 logger.debug(f"<<< {request_data}")
                 QuoridorList.finish_game(request_data["data"])
@@ -107,6 +95,7 @@ if __name__ == "__main__":
         auth_token = Config.get("token", None)
 
     if auth_token:
+        os.makedirs(GAMES_DIR, exist_ok=True)
         main(auth_token)
     else:
         logger.error("the token es missing")

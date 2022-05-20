@@ -1,22 +1,25 @@
 import logging
 import sys
 
-from quoridor.utils import Config
+from quoridor.constants import LOG_FILE
 
-formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname)s - %(message)s")
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+def get_logger(log_file: str = LOG_FILE, level: int = logging.DEBUG):
+    logger = logging.getLogger(log_file)
+    logger.setLevel(level)
+    formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname)s - %(message)s")
 
-# console
-sh = logging.StreamHandler(sys.stdout)
-sh.setLevel(logging.DEBUG)
-sh.setFormatter(formatter)
+    # console
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setFormatter(formatter)
 
-# file
-fh = logging.FileHandler(Config["log_path"])
-fh.setLevel(logging.DEBUG)
-fh.setFormatter(formatter)
+    # file
+    fh = logging.FileHandler(log_file)
+    fh.setFormatter(formatter)
 
-logger.addHandler(sh)
-logger.addHandler(fh)
+    logger.addHandler(sh)
+    logger.addHandler(fh)
+    return logger
+
+
+logger = get_logger()
