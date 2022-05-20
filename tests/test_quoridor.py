@@ -78,8 +78,7 @@ class TestQuoridor(TestCase):
             "h |                 \n"
             "8 |  S     S     S  \n"
         )
-        game = Quoridor(self.data)
-        assert game.draw_board(self.data["board"]) == expected_board
+        assert Quoridor.draw_board(self.data["board"]) == expected_board
 
     def test_draw_empty_board(self):
         game = Quoridor(self.data)

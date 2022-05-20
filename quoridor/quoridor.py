@@ -1,20 +1,27 @@
+from datetime import datetime
 from random import randint
 from typing import Dict
 
 from quoridor.constants import (
     CELL_NORTH_PAWN,
     CELL_SOUTH_PAWN,
-    # CELL_HORIZONTAL_WALL,
     CELL_VERTICAL_WALL,
     CELL_EMPTY,
     DIRECTION_NORTH,
     DIRECTION_SOUTH,
     DIRECTION_EAST,
     DIRECTION_WEST,
+    LOG_GAMES_DIR,
+    LOG_GAME_INIT,
+    LOG_GAME_EVENT,
+    LOG_GAME_ACTION,
+    LOG_GAME_OVER,
+    LOG_GAME_BOARD,
     RESULT_LOSS,
     RESULT_TIE,
     RESULT_WIN,
 )
+from quoridor.log import get_logger
 
 
 class QuoridorException(Exception):
@@ -63,6 +70,12 @@ class Quoridor:
         self.opponent = (
             data["player_2"] if data["side"] == CELL_NORTH_PAWN else data["player_1"]
         )
+        self.logger = get_logger((
+            f"{LOG_GAMES_DIR}"
+            f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')}_"
+            f"{data['player_1']}_vs_{data['player_2']}"
+        ))
+        self.logger.info(f"{LOG_GAME_INIT} {data}")
 
     @classmethod
     def draw_board(cls, board: str):
@@ -111,13 +124,20 @@ class Quoridor:
         return board_graph
 
     def play(self, data):
+        """"""
+        self.logger.info(f"{LOG_GAME_EVENT} {data}")
+        # TODO: draw the board or not, should be configurable
+        self.logger.info(f"{LOG_GAME_BOARD} \n{Quoridor.draw_board(data['board'])}")
+
         # if randint(0, 4) >= 1:
         #     strategy = self._move_pawn
         # else:
         #     strategy = self._place_wall
 
         # return strategy(data)
-        return self._move_pawn(data)
+        move = self._move_pawn(data)
+        self.logger.info(f"{LOG_GAME_ACTION} {move}")
+        return move
 
     def _check_movement(self, pawn, direction):
         """Check if it is possible to move in the indicated direction, returna el contenido de la celda de dest
@@ -188,19 +208,22 @@ class Quoridor:
 
             if self._check_movement(pawn, forward_direction) == CELL_EMPTY:
                 to_row += 2 * (1 if self.side == CELL_NORTH_PAWN else -1)
+                break
             else:
                 if pawn[1] <= 14:
                     if self._check_movement(pawn, DIRECTION_EAST) == CELL_EMPTY:
                         to_col += 2
+                        break
                 if pawn[1] >= 2:
                     if self._check_movement(pawn, DIRECTION_WEST) == CELL_EMPTY:
                         to_col -= 2
+                        break
         else:
             return self._place_wall(data)
 
-        return (
-            "move",
-            {
+        return {
+            "action": "move",
+            "data": {
                 "game_id": data["game_id"],
                 "turn_token": data["turn_token"],
                 "from_row": from_row / 2,
@@ -208,22 +231,23 @@ class Quoridor:
                 "to_row": to_row / 2,
                 "to_col": to_col / 2,
             },
-        )
+        }
 
     def _place_wall(self, data):
-        return (
-            "wall",
-            {
+        return {
+            "action": "wall",
+            "data": {
                 "game_id": data["game_id"],
                 "turn_token": data["turn_token"],
                 "row": randint(0, 8),
                 "col": randint(0, 8),
                 "orientation": "h" if randint(0, 1) == 0 else "v",
             },
-        )
+        }
 
     def game_over(self, data):
         """Receive the data of game_over event and determines the winner"""
+        self.logger.info(f"{LOG_GAME_OVER} {data}")
 
         score_player = (
             data["score_1"] if self.side == CELL_NORTH_PAWN else data["score_2"]
