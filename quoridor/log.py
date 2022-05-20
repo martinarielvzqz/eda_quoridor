@@ -11,10 +11,12 @@ def get_logger(log_file: str = LOG_FILE, level: int = logging.DEBUG):
 
     # console
     sh = logging.StreamHandler(sys.stdout)
+    logger.setLevel(level)
     sh.setFormatter(formatter)
 
     # file
     fh = logging.FileHandler(log_file)
+    logger.setLevel(level)
     fh.setFormatter(formatter)
 
     logger.addHandler(sh)
