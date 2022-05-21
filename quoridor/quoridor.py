@@ -118,8 +118,8 @@ class Quoridor:
         for index, coord in enumerate(Quoridor.COORDINATES_VALUES):
             from_pos = index * Quoridor.BOARD_SIZE
             to_pos = from_pos + Quoridor.BOARD_SIZE
-            board_graph += f"{coord} |"  # side header
-            board_graph += f"{board[from_pos:to_pos]}\n"  # map
+            board_graph += f"{coord} |"                     # side header
+            board_graph += f"{board[from_pos:to_pos]}\n"    # map
 
         return board_graph
 

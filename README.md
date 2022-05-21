@@ -12,6 +12,7 @@ cd eda_quoridor
 pipenv install
 pipenv shell
 pipenv install -r requirements.txt
+pipenv install --dev -r requirements-dev.txt  # only required for run tests
 ```
 
 ## Configuration
@@ -24,4 +25,18 @@ Configure your credentials in config.yml
 ## Run
 ```sh
 python main.py
+```
+
+
+# Docker
+
+```sh
+docker build -t quoridor_client .
+```
+
+```sh
+docker run --rm \
+    --name quoridor_client \
+    --mount type=bind,source=/var/log/quoridor,target=/usr/src/app/logs \
+    quoridor_client
 ```
