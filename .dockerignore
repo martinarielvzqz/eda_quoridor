@@ -1,0 +1,14 @@
+.pytest_cache
+logs
+tests
+.coverage
+.dockerignore
+.git
+.gitignore
+.travis.yml
+Pipfile
+Pipfile.lock
+Dockerfile
+README.md
+requirements-dev.txt
+setup.cfg
