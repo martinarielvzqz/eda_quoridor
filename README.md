@@ -24,7 +24,7 @@ Configure your credentials in config.yml
 
 ## Run
 ```sh
-python main.py
+python run.py
 ```
 
 
