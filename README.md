@@ -17,7 +17,7 @@ pipenv install --dev -r requirements-dev.txt  # only required for run tests
 
 ## Configuration
 ```sh
-cp config.sample.yml config.yml
+cp env.sample .env
 ```
 Configure your credentials in config.yml
 

@@ -1,5 +1,7 @@
 import asyncio
 import json
+from dotenv import load_dotenv
+import os
 import sys
 import websockets
 
@@ -12,7 +14,10 @@ from quoridor.constants import (
 )
 from quoridor.log import logger
 from quoridor.quoridor import QuoridorList
-from quoridor.utils import Config
+# from quoridor.utils import Config
+
+
+load_dotenv()
 
 
 async def process_event(websocket):
@@ -81,7 +86,8 @@ async def start(host: str, auth_token: str):
 
 
 def main(auth_token: str):
-    asyncio.get_event_loop().run_until_complete(start(Config["host"], auth_token))
+    # asyncio.get_event_loop().run_until_complete(start(Config["host"], auth_token))
+    asyncio.get_event_loop().run_until_complete(start(os.getenv("HOST"), auth_token))
 
 
 if __name__ == "__main__":
@@ -91,9 +97,10 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         auth_token = sys.argv[1]
     else:
-        auth_token = Config.get("token", None)
+        auth_token = os.getenv("TOKEN")
 
     if auth_token:
+
         main(auth_token)
     else:
         logger.error("the token es missing")
