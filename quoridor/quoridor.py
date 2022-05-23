@@ -3,6 +3,8 @@ from random import randint
 from typing import Dict
 
 from quoridor.constants import (
+    BOARD_HEADER,
+    BOARD_SIZE,
     CELL_NORTH_PAWN,
     CELL_SOUTH_PAWN,
     CELL_VERTICAL_WALL,
@@ -24,11 +26,11 @@ from quoridor.constants import (
 from quoridor.log import get_logger
 
 
-class QuoridorException(Exception):
+class GameException(Exception):
     pass
 
 
-class QuoridorList:
+class GameList:
     """Class to contain games"""
 
     games = {}
@@ -42,7 +44,7 @@ class QuoridorList:
         """
 
         if data["game_id"] not in cls.games:
-            cls.games[data["game_id"]] = Quoridor(data)
+            cls.games[data["game_id"]] = Game(data)
 
         return cls.games[data["game_id"]]
 
@@ -53,15 +55,13 @@ class QuoridorList:
         return game.game_over(data)
 
 
-class Quoridor:
-    COORDINATES_VALUES = "0a1b2c3d4e5f6g7h8"
-    BOARD_SIZE = len(COORDINATES_VALUES)
+class Game:
 
     def __init__(self, data: Dict):
         self.game_id = data["game_id"]
         self.board = [
-            [None for _ in range(Quoridor.BOARD_SIZE)]
-            for _ in range(Quoridor.BOARD_SIZE)
+            [None for _ in range(BOARD_SIZE)]
+            for _ in range(BOARD_SIZE)
         ]
         self.side = data["side"]
         self.player = (
@@ -106,18 +106,18 @@ class Quoridor:
         """
 
         if board is None or not isinstance(board, str):
-            raise QuoridorException("Invalid board type")
+            raise GameException("Invalid board type")
 
-        if len(board) != Quoridor.BOARD_SIZE * Quoridor.BOARD_SIZE:
-            raise QuoridorException("Invalid board size")
+        if len(board) != BOARD_SIZE * BOARD_SIZE:
+            raise GameException("Invalid board size")
 
         # top header
-        board_graph = f"   {Quoridor.COORDINATES_VALUES}\n"
-        board_graph += f"   {'-'* Quoridor.BOARD_SIZE}\n"
+        board_graph = f"   {BOARD_HEADER}\n"
+        board_graph += f"   {'-' * BOARD_SIZE}\n"
 
-        for index, coord in enumerate(Quoridor.COORDINATES_VALUES):
-            from_pos = index * Quoridor.BOARD_SIZE
-            to_pos = from_pos + Quoridor.BOARD_SIZE
+        for index, coord in enumerate(BOARD_HEADER):
+            from_pos = index * BOARD_SIZE
+            to_pos = from_pos + BOARD_SIZE
             board_graph += f"{coord} |"                     # side header
             board_graph += f"{board[from_pos:to_pos]}\n"    # map
 
@@ -127,7 +127,7 @@ class Quoridor:
         """"""
         self.logger.info(f"{LOG_GAME_EVENT} {data}")
         # TODO: draw the board or not, should be configurable
-        self.logger.info(f"{LOG_GAME_BOARD} \n{Quoridor.draw_board(data['board'])}")
+        self.logger.info(f"{LOG_GAME_BOARD} \n{Game.draw_board(data['board'])}")
 
         # if randint(0, 4) >= 1:
         #     strategy = self._move_pawn
@@ -190,9 +190,9 @@ class Quoridor:
 
     def _move_pawn(self, data):
         # update board
-        for row in range(Quoridor.BOARD_SIZE):
-            for col in range(Quoridor.BOARD_SIZE):
-                self.board[row][col] = data["board"][(row * Quoridor.BOARD_SIZE) + col]
+        for row in range(BOARD_SIZE):
+            for col in range(BOARD_SIZE):
+                self.board[row][col] = data["board"][(row * BOARD_SIZE) + col]
 
         my_pawns = self._get_pawns(self.side)
         forward_direction = (
@@ -279,7 +279,7 @@ class Quoridor:
 
         # iterate the board from north to south
         start = 0
-        stop = Quoridor.BOARD_SIZE
+        stop = BOARD_SIZE
         step = 2
 
         if side == CELL_NORTH_PAWN:

@@ -1,10 +1,10 @@
 from unittest import TestCase
 
 from quoridor.constants import CELL_NORTH_PAWN
-from quoridor.quoridor import Quoridor, QuoridorException
+from quoridor.quoridor import Game, GameException
 
 
-class TestQuoridor(TestCase):
+class TestGame(TestCase):
     def setUp(self):
         self.player_name_1 = "harry"
         self.player_name_2 = "larry"
@@ -40,8 +40,8 @@ class TestQuoridor(TestCase):
         }
 
     def test_game_creation(self):
-        game = Quoridor(self.data)
-        assert isinstance(game, Quoridor)
+        game = Game(self.data)
+        assert isinstance(game, Game)
         assert (
             game.player == self.player_name_1
             if game.side == CELL_NORTH_PAWN
@@ -78,24 +78,24 @@ class TestQuoridor(TestCase):
             "h |                 \n"
             "8 |  S     S     S  \n"
         )
-        assert Quoridor.draw_board(self.data["board"]) == expected_board
+        assert Game.draw_board(self.data["board"]) == expected_board
 
     def test_draw_empty_board(self):
-        game = Quoridor(self.data)
-        with self.assertRaises(QuoridorException):
+        game = Game(self.data)
+        with self.assertRaises(GameException):
             game.draw_board("")
 
     def test_draw_board_with_invalid_size(self):
-        game = Quoridor(self.data)
-        with self.assertRaises(QuoridorException):
+        game = Game(self.data)
+        with self.assertRaises(GameException):
             game.draw_board("something invalid")
 
     def test_draw_null_board(self):
-        game = Quoridor(self.data)
-        with self.assertRaises(QuoridorException):
+        game = Game(self.data)
+        with self.assertRaises(GameException):
             game.draw_board(None)
 
     def test_draw_board_with_invalid_type(self):
-        game = Quoridor(self.data)
-        with self.assertRaises(QuoridorException):
+        game = Game(self.data)
+        with self.assertRaises(GameException):
             game.draw_board(123)

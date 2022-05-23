@@ -13,8 +13,7 @@ from quoridor.constants import (
     EVENT_YOUR_TURN
 )
 from quoridor.log import logger
-from quoridor.quoridor import QuoridorList
-# from quoridor.utils import Config
+from quoridor.quoridor import GameList
 
 
 load_dotenv()
@@ -36,11 +35,11 @@ async def process_event(websocket):
             elif request_data["event"] == EVENT_CHALLENGE:
                 logger.info(f"<<< {request_data}")
                 # only for dev
-                # if request_data["data"]["opponent"] not in [
-                #     "martinv0001",
-                #     "martin2005@gmail.com",
-                # ]:
-                #     continue
+                if request_data["data"]["opponent"] not in [
+                    "martinv0001",
+                    "martin2005@gmail.com",
+                ]:
+                    continue
                 message = json.dumps({
                     "action": ACTION_ACCEPT_CHALLENGE,
                     "data": {"challenge_id": request_data["data"]["challenge_id"]}
@@ -48,13 +47,13 @@ async def process_event(websocket):
                 await websocket.send(message)
 
             elif request_data["event"] == EVENT_YOUR_TURN:
-                game = QuoridorList.get_or_create(request_data["data"])
+                game = GameList.get_or_create(request_data["data"])
                 move = game.play(request_data["data"])
                 await websocket.send(json.dumps(move))
 
             elif request_data["event"] == EVENT_GAME_OVER:
                 logger.debug(f"<<< {request_data}")
-                QuoridorList.finish_game(request_data["data"])
+                GameList.finish_game(request_data["data"])
             else:
                 logger.warning(
                     f"<<< unknown event: {request_data['event']} - data: {request_data['data']}"
