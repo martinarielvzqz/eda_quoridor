@@ -13,6 +13,10 @@ ACTION_ACCEPT_CHALLENGE = "accept_challenge"
 ACTION_MOVE = "move"
 ACTION_WALL = "wall"
 
+# board
+BOARD_HEADER = "0a1b2c3d4e5f6g7h8"
+BOARD_SIZE = len(BOARD_HEADER)
+
 # board cells
 CELL_NORTH_PAWN = "N"
 CELL_SOUTH_PAWN = "S"
