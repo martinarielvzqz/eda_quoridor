@@ -1,8 +1,5 @@
 from unittest import TestCase
 
-from quoridor.helper import (
-    get_pawns
-)
 
 class TestGame(TestCase):
     def setUp(self):

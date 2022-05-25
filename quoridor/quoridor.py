@@ -16,6 +16,7 @@ from quoridor.constants import (
     RESULT_TIE,
     RESULT_WIN,
 )
+from quoridor.helper import draw_board
 from quoridor.log import get_logger
 from quoridor.strategy import MovePawnGameStrategy, PlaceWallGameStrategy
 
@@ -36,6 +37,8 @@ class GameList:
         Create a new game and add it to the list if it doesn't exist
         In both cases the game is returned
         """
+        if not isinstance(data, dict) or 'game_id' not in data:
+            return None
 
         if data["game_id"] not in cls.games:
             try:
@@ -81,16 +84,16 @@ class Game:
         """"""
         self.update_board(data["board"])
         self.logger.info(f"{LOG_GAME_EVENT} {data}")
-        # if enable_draw_board:
-        #     self.logger.info(f"{LOG_GAME_BOARD} \n{draw_board(data['board'])}")
+        if enable_draw_board:
+            self.logger.info(f"{LOG_GAME_BOARD} \n{draw_board(data['board'])}")
 
         # TODO: improve strategy choice
-        # if randint(0, 4) >= 1:
-        #     strategy = MovePawnGameStrategy()
-        # else:
-        #     strategy = PlaceWallGameStrategy()
+        if randint(0, 4) >= 1:
+            strategy = MovePawnGameStrategy()
+        else:
+            strategy = PlaceWallGameStrategy()
 
-        strategy = MovePawnGameStrategy()
+        # strategy = MovePawnGameStrategy()
 
         move = strategy.play(board=self.board, side=self.side)
         move["data"]["game_id"] = data["game_id"]

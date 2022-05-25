@@ -64,7 +64,7 @@ class TestGame(TestCase):
     ])
     def test_game_creation_with_invalid_data(self, data):
         with self.assertRaises(GameException):
-            game = Game(data)
+            Game(data)
 
 
 class TestGameList(TestCase):
@@ -142,13 +142,23 @@ class TestGameList(TestCase):
         assert len(GameList.games) == 0
 
     def test_list_with_one_game(self):
+        assert len(GameList.games) == 0
         GameList.get_or_create(self.game1_data)
         assert len(GameList.games) == 1
+        # clean static variable
+        GameList.games.clear()
 
     def test_list_no_duplicate_games(self):
+        assert len(GameList.games) == 0
         GameList.get_or_create(self.game1_data)
         assert len(GameList.games) == 1
         GameList.get_or_create(self.game1_data)
         assert len(GameList.games) == 1
+        # clean static variable
+        GameList.games.clear()
 
+    def test_list_with_invalid_data(self):
+        GameList.get_or_create("something invalid")
+        assert len(GameList.games) == 0
 
+    # test finish_game
