@@ -22,6 +22,10 @@ CELL_EMPTY = " "
 # CELL_WALL = "-|"
 # CELL_PAWN = "NS"
 
+# board
+BOARD_HEADER = "0a1b2c3d4e5f6g7h8"
+BOARD_SIZE = len(BOARD_HEADER)
+
 # directions
 DIRECTION_NORTH = 0
 DIRECTION_SOUTH = 1
@@ -36,7 +40,7 @@ RESULT_TIE = 2
 # log
 LOG_DIR = "logs"
 LOG_FILE = LOG_DIR + os.sep + "quoridor.log"
-LOG_GAMES_DIR = LOG_DIR + os.sep + "games"
+LOG_GAMES_DIR = LOG_DIR + os.sep + "games" + os.sep
 LOG_GAME_INIT = "GAME_INIT"
 LOG_GAME_EVENT = "GAME_EVENT"
 LOG_GAME_BOARD = "GAME_BOARD"
