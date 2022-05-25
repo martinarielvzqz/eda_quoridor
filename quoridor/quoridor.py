@@ -17,7 +17,7 @@ from quoridor.constants import (
     RESULT_WIN,
 )
 from quoridor.log import get_logger
-from quoridor.strategy import MovePawnGameStrategy, PlaceWallGameStrategy, draw_board
+from quoridor.strategy import MovePawnGameStrategy, PlaceWallGameStrategy
 
 
 class GameException(Exception):
@@ -65,7 +65,7 @@ class Game:
             self.board = [
                 [CELL_EMPTY for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)
             ]
-        except KeyError as e:
+        except (TypeError, KeyError) as e:
             raise GameException(f"Invalid initialization data: {e}")
 
         self.logger = get_logger(
@@ -81,8 +81,8 @@ class Game:
         """"""
         self.update_board(data["board"])
         self.logger.info(f"{LOG_GAME_EVENT} {data}")
-        if enable_draw_board:
-            self.logger.info(f"{LOG_GAME_BOARD} \n{draw_board(data['board'])}")
+        # if enable_draw_board:
+        #     self.logger.info(f"{LOG_GAME_BOARD} \n{draw_board(data['board'])}")
 
         # TODO: improve strategy choice
         # if randint(0, 4) >= 1:
