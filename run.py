@@ -25,40 +25,29 @@ async def process_event(websocket):
         try:
             request = await websocket.recv()
             request_data = json.loads(request)
-            logger.info(f"<<< EVENT: {request_data}")
 
             if request_data["event"] == EVENT_LIST_USERS:
                 logger.info(
                     f"<<< event: {request_data['event']} - data: {request_data['data']}"
                 )
-
             elif request_data["event"] == EVENT_CHALLENGE:
                 logger.info(f"<<< {request_data}")
-                # only for dev
-                if request_data["data"]["opponent"] not in [
-                    "martinv0001",
-                    "martin2005@gmail.com",
-                ]:
-                    continue
                 message = json.dumps({
                     "action": ACTION_ACCEPT_CHALLENGE,
                     "data": {"challenge_id": request_data["data"]["challenge_id"]}
                 })
                 await websocket.send(message)
-
             elif request_data["event"] == EVENT_YOUR_TURN:
                 game = GameList.get_or_create(request_data["data"])
-                move = game.play(request_data["data"])
+                move = game.play(request_data["data"], enable_draw_board=True)
                 await websocket.send(json.dumps(move))
-
             elif request_data["event"] == EVENT_GAME_OVER:
-                logger.debug(f"<<< {request_data}")
+                logger.info(f"<<< {request_data}")
                 GameList.finish_game(request_data["data"])
             else:
                 logger.warning(
                     f"<<< unknown event: {request_data['event']} - data: {request_data['data']}"
                 )
-
         except Exception as e:
             logger.error(f"exception {e}")
 
@@ -73,19 +62,18 @@ async def start(host: str, auth_token: str):
                 logger.info(f"connected to {host}")
                 await process_event(websocket)
         except KeyboardInterrupt:
-            logger.info("exiting...")
+            logger.info("Exiting...")
             break
         except websockets.exceptions.InvalidURI as e:
-            logger.error(f"invalid uri... {e}")
+            logger.error(f"Invalid uri... {e}")
             break
         except Exception as e:
-            logger.error(f"error connecting... {e}")
+            logger.error(f"Error connecting... {e}")
             # retry in 5 seconds
             await asyncio.sleep(5)
 
 
 def main(auth_token: str):
-    # asyncio.get_event_loop().run_until_complete(start(Config["host"], auth_token))
     asyncio.get_event_loop().run_until_complete(start(os.getenv("HOST"), auth_token))
 
 
