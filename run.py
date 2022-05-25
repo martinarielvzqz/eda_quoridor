@@ -30,26 +30,17 @@ async def process_event(websocket):
                 logger.info(
                     f"<<< event: {request_data['event']} - data: {request_data['data']}"
                 )
-
             elif request_data["event"] == EVENT_CHALLENGE:
                 logger.info(f"<<< {request_data}")
-                # only for dev
-                if request_data["data"]["opponent"] in [
-                    "martinv0001",
-                    "martin2005@gmail.com",
-                ]:
-
-                    message = json.dumps({
-                        "action": ACTION_ACCEPT_CHALLENGE,
-                        "data": {"challenge_id": request_data["data"]["challenge_id"]}
-                    })
-                    await websocket.send(message)
-
+                message = json.dumps({
+                    "action": ACTION_ACCEPT_CHALLENGE,
+                    "data": {"challenge_id": request_data["data"]["challenge_id"]}
+                })
+                await websocket.send(message)
             elif request_data["event"] == EVENT_YOUR_TURN:
                 game = GameList.get_or_create(request_data["data"])
                 move = game.play(request_data["data"], enable_draw_board=True)
                 await websocket.send(json.dumps(move))
-
             elif request_data["event"] == EVENT_GAME_OVER:
                 logger.info(f"<<< {request_data}")
                 GameList.finish_game(request_data["data"])
@@ -57,7 +48,6 @@ async def process_event(websocket):
                 logger.warning(
                     f"<<< unknown event: {request_data['event']} - data: {request_data['data']}"
                 )
-
         except Exception as e:
             logger.error(f"exception {e}")
 
