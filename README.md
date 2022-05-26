@@ -3,6 +3,8 @@ Quoridor bot client for EDA
 
 [![Build Status](https://app.travis-ci.com/martinarielvzqz/eda_quoridor.svg?token=Cn4W6Wq2fytkMsceRcpS&branch=main)](https://app.travis-ci.com/martinarielvzqz/eda_quoridor)
 
+[![Coverage Status](https://coveralls.io/repos/github/martinarielvzqz/eda_quoridor/badge.svg?branch=main)](https://coveralls.io/github/martinarielvzqz/eda_quoridor?branch=main)
+
 ## Installation
 clone and install dependencies
 
