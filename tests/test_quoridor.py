@@ -178,4 +178,3 @@ class TestGameList(TestCase):
         assert len(GameList.games) == 1
         GameList.finish_game(self.game2_data)
         assert len(GameList.games) == 1
-
