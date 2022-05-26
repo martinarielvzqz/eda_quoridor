@@ -87,6 +87,9 @@ class Game:
         if enable_draw_board:
             self.logger.info(f"{LOG_GAME_BOARD} \n{draw_board(data['board'])}")
 
+        # si muevo primero
+        #     mover peon
+
         # TODO: improve strategy choice
         if randint(0, 4) >= 1:
             strategy = MovePawnGameStrategy()

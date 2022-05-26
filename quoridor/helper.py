@@ -93,7 +93,8 @@ def check_movement(board, pawn, direction):
     if a wall is found, CELL_HORIZONTAL_WALL or CELL_VERTICAL_WALL is returned
     if a pawn is found, CELL_PAWN_NORTH or CELL_PAWN_SOUTH is returned
     """
-    # check pawn
+    # check if cell has a pawn
+
     if board[pawn[ROW]][pawn[COL]] not in [CELL_NORTH_PAWN, CELL_SOUTH_PAWN]:
         raise Exception("Invalid pawn")
 
@@ -137,3 +138,27 @@ def check_movement(board, pawn, direction):
 
     # return HORIZONTAL_WALL or VERTICAL_WALL
     return board[pawn[0] + (1 * row_movement)][pawn[1] + (1 * col_movement)]
+
+
+def check_jump(board, pawn) -> bool:
+    """
+    In the case of two pawns facing each other, check the possible jump.
+    Returns false if the indicated pawn does not have an enemy pawn in front
+    The function assumes that there is no wall between the pawns (this is verified outside)
+    """
+    # check side for determine direction
+    side = board[pawn[ROW]][pawn[COL]]
+    if side not in [CELL_NORTH_PAWN, CELL_SOUTH_PAWN]:
+        return False
+    direction = DIRECTION_NORTH if side == CELL_SOUTH_PAWN else DIRECTION_SOUTH
+    row_direction = 1 if direction == DIRECTION_SOUTH else -1
+    # check that the other pawn exists and is an enemy
+    cell_in_front = check_movement(board, pawn, direction)
+    if cell_in_front not in [CELL_NORTH_PAWN, CELL_SOUTH_PAWN] or cell_in_front == side:
+        return False
+    # check wall and cell behind of cell in front
+    cell_to_jump = check_movement(board, (pawn[ROW]+(2*row_direction), pawn[COL]), direction)
+    if cell_to_jump == CELL_EMPTY:
+        return True
+
+    return False

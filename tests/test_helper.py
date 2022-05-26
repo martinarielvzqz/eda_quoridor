@@ -15,7 +15,8 @@ from quoridor.constants import (
 from quoridor.helper import (
     draw_board,
     get_pawns,
-    check_movement
+    check_movement,
+    check_jump
 )
 from quoridor.quoridor import Game
 
@@ -75,7 +76,7 @@ class TestGame(TestCase):
                 "                 "
                 "                 "
                 "                 "
-                "                 "
+                "-*-              "
                 "N                "
                 "                 "
                 "S                "
@@ -187,3 +188,16 @@ class TestGame(TestCase):
         game.play(self.game2_data)
         with self.assertRaises(Exception):
             assert check_movement(game.board, (0, 0), DIRECTION_NORTH)
+
+    @parameterized.expand([
+        ((8, 0), True),
+        ((0, 8), False),
+        ((2, 14), False),
+        ((10, 0), False),
+        ((16, 8), False),
+        ((16, 16), False)
+    ])
+    def test_if_pawn_can_jump(self, pawn, result):
+        game = Game(self.game2_data)
+        game.play(self.game2_data)
+        assert check_jump(game.board, pawn) == result
