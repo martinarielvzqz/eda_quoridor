@@ -3,7 +3,11 @@ from parameterized import parameterized
 
 from quoridor.constants import (
     BOARD_SIZE,
-    CELL_NORTH_PAWN
+    CELL_EMPTY,
+    CELL_NORTH_PAWN,
+    RESULT_TIE,
+    RESULT_LOSS,
+    RESULT_WIN
 )
 from quoridor.quoridor import Game, GameList, GameException
 
@@ -65,6 +69,52 @@ class TestGame(TestCase):
     def test_game_creation_with_invalid_data(self, data):
         with self.assertRaises(GameException):
             Game(data)
+
+    def test_updated_board(self):
+        game = Game(self.data)
+        assert game.board[0][2] == CELL_EMPTY
+        game.update_board(self.data['board'])
+        assert game.board[0][2] == CELL_NORTH_PAWN
+
+    @parameterized.expand([
+        (123,),
+        ("something invalid",),
+        (None,)
+    ])
+    def test_updated_board_with_invalid_data(self, board):
+        game = Game(self.data)
+        with self.assertRaises(GameException):
+            game.update_board(board)
+
+    @parameterized.expand([
+        ({
+            "player_1": "harry",
+            "player_2": "larry",
+            "score_1": 0.0,
+            "score_2": 0.0,
+            "walls": 10.0,
+            "side": "N"
+        }, RESULT_TIE),
+        ({
+            "player_1": "harry",
+            "player_2": "larry",
+            "score_1": 50.0,
+            "score_2": 0.0,
+            "walls": 10.0,
+            "side": "N"
+        }, RESULT_WIN),
+        ({
+            "player_1": "harry",
+            "player_2": "larry",
+            "score_1": 50.0,
+            "score_2": 0.0,
+            "walls": 10.0,
+            "side": "S"
+        }, RESULT_LOSS),
+    ])
+    def test_game_over(self, partial_data, result):
+        game = Game(self.data)
+        assert game.game_over(partial_data) == result
 
 
 class TestGameList(TestCase):
@@ -178,3 +228,8 @@ class TestGameList(TestCase):
         assert len(GameList.games) == 1
         GameList.finish_game(self.game2_data)
         assert len(GameList.games) == 1
+
+
+
+
+
