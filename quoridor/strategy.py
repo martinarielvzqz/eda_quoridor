@@ -3,6 +3,7 @@ from typing import Dict
 from random import randint
 
 from quoridor.constants import (
+    BOARD_SIZE,
     CELL_EMPTY,
     CELL_NORTH_PAWN,
     CELL_SOUTH_PAWN,
@@ -10,6 +11,8 @@ from quoridor.constants import (
     DIRECTION_SOUTH,
     DIRECTION_EAST,
     DIRECTION_WEST,
+    ROW,
+    COL
 )
 from quoridor.helper import (
     get_pawns,
@@ -84,7 +87,25 @@ class MovePawnGameStrategy(GameStrategy):
 class PlaceWallGameStrategy(GameStrategy):
     def play(self, board, side) -> Dict:
         # TODO: put wall in front of the most advanced enemy pawn
+        enemy_side = CELL_NORTH_PAWN if side == CELL_SOUTH_PAWN else CELL_SOUTH_PAWN
+        enemy_row_direction = 1 if enemy_side == CELL_NORTH_PAWN else -1
+        enemy_pawns = get_pawns(board, enemy_side)
+
+        row = randint(0, BOARD_SIZE-1)
+        col = randint(0, BOARD_SIZE-1)
+
+        for enemy_pawn in enemy_pawns:
+            if board[enemy_pawn[ROW]+enemy_row_direction][enemy_pawn[COL]] == CELL_EMPTY:
+                row = enemy_pawn[ROW] + enemy_row_direction
+                col = (enemy_pawn[COL]-1) if enemy_pawn[COL] >= 8 else (enemy_pawn[COL]+1)
+                print(f"row {row} - col {col} wall calculated")
+                break
+
         return {
             "action": "wall",
-            "data": {"row": randint(0, 8), "col": randint(0, 8), "orientation": "h"},
+            "data": {
+                "row": row / 2,
+                "col": col / 2,
+                "orientation": "h"
+            },
         }
