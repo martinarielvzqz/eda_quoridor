@@ -4,13 +4,15 @@ from quoridor.constants import (
     CELL_EMPTY,
     CELL_HORIZONTAL_WALL,
     CELL_NORTH_PAWN,
+    CELL_SOUTH_PAWN,
     CELL_VERTICAL_WALL,
     DIRECTION_NORTH,
     DIRECTION_SOUTH,
     DIRECTION_EAST,
     DIRECTION_WEST,
+    ROW,
+    COL
 )
-# from quoridor.quoridor import GameException
 
 
 def draw_board(board: str):
@@ -91,16 +93,19 @@ def check_movement(board, pawn, direction):
     if a wall is found, CELL_HORIZONTAL_WALL or CELL_VERTICAL_WALL is returned
     if a pawn is found, CELL_PAWN_NORTH or CELL_PAWN_SOUTH is returned
     """
+    # check pawn
+    if board[pawn[ROW]][pawn[COL]] not in [CELL_NORTH_PAWN, CELL_SOUTH_PAWN]:
+        raise Exception("Invalid pawn")
 
     # check vertical borders
-    if (pawn[1] == 0 and direction == DIRECTION_WEST) or (
-        pawn[1] == BOARD_SIZE - 1 and direction == DIRECTION_EAST
+    if (pawn[COL] == 0 and direction == DIRECTION_WEST) or (
+        pawn[COL] == BOARD_SIZE - 1 and direction == DIRECTION_EAST
     ):
         return CELL_VERTICAL_WALL
 
     # check horizontal borders
-    if (pawn[0] == BOARD_SIZE - 1 and direction == DIRECTION_SOUTH) or (
-        pawn[0] == 0 and direction == DIRECTION_NORTH
+    if (pawn[ROW] == BOARD_SIZE - 1 and direction == DIRECTION_SOUTH) or (
+        pawn[ROW] == 0 and direction == DIRECTION_NORTH
     ):
         return CELL_HORIZONTAL_WALL
 
@@ -112,7 +117,7 @@ def check_movement(board, pawn, direction):
     col_movement = (
         0
         if direction not in [DIRECTION_EAST, DIRECTION_WEST]
-        else (1 if direction == DIRECTION_WEST else -1)
+        else (1 if direction == DIRECTION_EAST else -1)
     )
 
     # check wall

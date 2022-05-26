@@ -137,6 +137,7 @@ class TestGameList(TestCase):
             "turn_token": "0c22e2de-1d6c-40b4-95ee-6728a15ef582",
             "game_id": self.game2_game_id
         }
+        GameList.games = {}
 
     def test_empty_list(self):
         assert len(GameList.games) == 0
@@ -145,8 +146,6 @@ class TestGameList(TestCase):
         assert len(GameList.games) == 0
         GameList.get_or_create(self.game1_data)
         assert len(GameList.games) == 1
-        # clean static variable
-        GameList.games.clear()
 
     def test_list_no_duplicate_games(self):
         assert len(GameList.games) == 0
@@ -154,11 +153,29 @@ class TestGameList(TestCase):
         assert len(GameList.games) == 1
         GameList.get_or_create(self.game1_data)
         assert len(GameList.games) == 1
-        # clean static variable
-        GameList.games.clear()
+
+    def test_list_with_many_games(self):
+        assert len(GameList.games) == 0
+        GameList.get_or_create(self.game1_data)
+        assert len(GameList.games) == 1
+        GameList.get_or_create(self.game2_data)
+        assert len(GameList.games) == 2
 
     def test_list_with_invalid_data(self):
         GameList.get_or_create("something invalid")
         assert len(GameList.games) == 0
 
-    # test finish_game
+    def test_finish_game_remove_game_of_list(self):
+        assert len(GameList.games) == 0
+        GameList.get_or_create(self.game1_data)
+        assert len(GameList.games) == 1
+        GameList.finish_game(self.game1_data)
+        assert len(GameList.games) == 0
+
+    def test_finish_non_existent_game(self):
+        assert len(GameList.games) == 0
+        GameList.get_or_create(self.game1_data)
+        assert len(GameList.games) == 1
+        GameList.finish_game(self.game2_data)
+        assert len(GameList.games) == 1
+
